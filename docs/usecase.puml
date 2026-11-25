@@ -12,22 +12,22 @@ actor 관리자
 '유스케이스
 rectangle "회사 연차 관리 시스템"{
 '직원이 쓰는 기능
-usecase "연차 신청"
-usecase "신청 취소"
-usecase "잔여 연차 조회"
-usecase "내 신청 내역 조회"
+usecase "연차 신청" as UC_Apply
+usecase "신청 취소" as UC_Cancel
+usecase "잔여 연차 조회" as UC_Balance
+usecase "내 신청 내역 조회" as UC_MyList
 '팀장이 쓰는 기능
-usecase "승인 대기 목록 조회"
-usecase "신청 승인/반려"
+usecase "승인 대기 목록 조회" as UC_Pending
+usecase "신청 승인/반려" as UC_Approve
 '관리자가 쓰는 기능
-usecase "직원 등록"
-usecase "직원 조회"
-usecase "결근 등록"
-usecase "연차 일괄 부여"
-usecase "부서별 통계 조회"
+usecase "직원 등록" as UC_RegEmp
+usecase "직원 조회" as UC_FindEmp
+usecase "결근 등록" as UC_Absence
+usecase "연차 일괄 부여" as UC_Grant
+usecase "부서별 통계 조회" as UC_Stats
 '액터와 직접 연결하지 않는 기능
-usecase "잔여 연차 확인"
-usecase "연차 계산"
+usecase "잔여 연차 확인" as UC_Check
+usecase "연차 계산" as UC_Calc
 }
 
 usecase "로그인"
