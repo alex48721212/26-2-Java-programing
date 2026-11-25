@@ -1,0 +1,9 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName "Malgun Gothic"
+skinparam classAttributeIconSize 0
+hide empty members
+title 회사 연차관리 시스템 클래스 다이어그램
+
+
+@enduml

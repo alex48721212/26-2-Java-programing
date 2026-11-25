@@ -5,9 +5,9 @@ left to right direction
 title 연차관리 시스템 유스케이스 다이어그램
 
 '액터
-actor 직원
-actor 팀장
-actor 관리자
+actor 직원 as Emp
+actor 팀장 as Leader
+actor 관리자 as Admin
 
 '유스케이스
 rectangle "회사 연차 관리 시스템"{
@@ -30,5 +30,28 @@ usecase "잔여 연차 확인" as UC_Check
 usecase "연차 계산" as UC_Calc
 }
 
-usecase "로그인"
+'선으로 연결하기
+'직원 --> 기능 연결
+Emp --> UC_Apply
+Emp --> UC_Cancel
+Emp --> UC_Balance
+Emp --> UC_MyList
+'팀장 --> 기능 연결
+Leader --> UC_Pending
+Leader --> UC_Approve
+'관리자 --> 기능 연결
+Admin --> UC_RegEmp
+Admin --> UC_FindEmp
+Admin --> UC_Absence
+Admin --> UC_Grant
+Admin --> UC_Stats
+'팀장도 직원이기에 상속시키기
+Leader --|> Emp
+'include 만들기
+UC_Apply ..> UC_Check : <<include>>
+UC_Approve ..> UC_Check : <<include>>
+UC_Grant ..> UC_Calc : <<include>>
+'조건 메모
+note right of UC_Apply:병가는 차감 없음
+note right of UC_Grant:매년 1월 1일,회계연도 기준
 @enduml
