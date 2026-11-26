@@ -5,5 +5,150 @@ skinparam classAttributeIconSize 0
 hide empty members
 title 회사 연차관리 시스템 클래스 다이어그램
 
+enum LeaveType{
+ANNUAL
+HALF_AM
+HALF_PM
+SICK
+- label : String
+- unit : double
+- deductible : boolean
+}
 
+enum RequestStatus{
+PENDING
+APPROVED
+REJECTED
+CANCELED
++canChangeTo(next : RequestStatus) : boolean
+}
+
+enum Position{
+STAFF
+TEAM_LEADER
+ADMIN
+}
+
+class Employee{
+-id : String
+-name : String
+-department : String
+-position : Position
+-hireDate : LocalDate
+-manager : Employee
++getYearsOfService(baseDate : LocalDate) : int
++isApprover() : boolean
++isManagerOf(other : Employee) : boolean
+}
+
+class AttendanceRecord{
+- employee : Employee
+-absenceDates : Set<LocalDate>
++addAbsence(date : LocalDate) : void
++getAttendanceRate(from : LocalDate, to : LocalDate) : double
++countPerfectMonths(from : LocalDate,to : LocalDate) : int
+}
+
+class LeaveBalance{
+-employee : Employee
+- year : int
+-totalDays : double
+-usedDays : double
++deduct(days : double) : void
++restore(days : double) : void
++getRemaining() : double
++canUse(days : double) : boolean
++addMonthlyLeave() : void
+}
+
+class LeaveRequest{
+-id : long
+-applicant : Employee
+-type : LeaveType
+-startDate : LocalDate
+-endDate : LocalDate
+-reason : String
+-status : RequestStatus
+-approver : Employee
++approve(approver : Employee) : void
++reject(approver : Employee) : void
++cancel(requester : Employee) : void
++getUsedDays() : double
++isDeductible() : boolean
+}
+
+interface LeavePolicy{
+    + calculateAnnualLeave(employee : Employee, record : AttendanceRecord,baseDate : LocalDate) : double
+}
+
+class FiscalYearLeavePolicy{
+    + calculateAnnualLeave(employee : Employee, record : AttendanceRecord,baseDate : LocalDate) : double
+}
+
+interface EmployeeRepository{
+    + save(e : Employee) : void
+    + findById(id : String) : Employee
+    +findAll() : List<Employee>
+}
+
+interface LeaveRequestRepository{
+    +save(r : LeaveRequest) : void
+    +findById(id : long) : LeaveRequest
+    +findByApplicant(e : Employee) : List<LeaveRequest>
+}
+
+interface LeaveBalanceRepository{
+    +save(b : LeaveBalance) : void
+    +findByEmployeeAndYear(e : Employee, year : int) : LeaveBalance
+}
+
+interface AttendanceRepository{
+    +save(a : AttendanceRecord) : void
+    +findByEmployee(e : Employee) : AttendanceRecord
+}
+
+class InMemoryEmployeeRepository{}
+class InMemoryLeaveRequestRepository{}
+class InMemoryLeaveBalanceRepository{}
+class InMemoryAttendanceRepository{}
+
+class LeaveService{
+-employeeRepository : EmployeeRepository
+-requestRepository : LeaveRequestRepository
+-balanceRepository : LeaveBalanceRepository
+-attendanceRepository : AttendanceRepository
+-leavePolicy : LeavePolicy
++ apply(...) : LeaveRequest
++ cancel(requestId : long, requester : Employee) : void
++ approve(requestId : long, approver : Employee) : void
++ reject(requestId : long, approver : Employee) : void
++ grantAnnualLeave(year : int) : void
++ getMyBalance(employee : Employee) : LeaveBalance
+}
+
+LeaveService --> EmployeeRepository
+LeaveService --> LeaveRequestRepository
+LeaveService --> LeaveBalanceRepository
+LeaveService --> AttendanceRepository
+LeaveService --> LeavePolicy
+LeaveService ..> LeaveRequest
+LeaveService ..> LeaveBalance
+
+FiscalYearLeavePolicy ..|> LeavePolicy
+LeavePolicy ..> Employee
+LeavePolicy ..> AttendanceRecord
+
+LeaveRequest "*" --> "1" Employee : 신청자
+LeaveRequest "*" --> "0..1" Employee : 결재자
+LeaveRequest "*" --> "1" LeaveType
+LeaveRequest "*" --> "1" RequestStatus
+LeaveBalance "*" --> "1" Employee
+AttendanceRecord "1" --> "1" Employee
+Employee "*" --> "1" Position
+Employee "*" --> "0..1" Employee : 상사
+
+InMemoryEmployeeRepository ..|> EmployeeRepository
+InMemoryLeaveRequestRepository ..|> LeaveRequestRepository
+InMemoryLeaveBalanceRepository ..|> LeaveBalanceRepository
+InMemoryAttendanceRepository ..|> AttendanceRepository
 @enduml
